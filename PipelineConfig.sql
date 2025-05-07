@@ -1,0 +1,24 @@
+﻿USE QATest
+ -- ProfileId	VariantId	Env	OutputFileType	Muxer	OverallBitrate	OutputFileExtension	VideoType	VideoEncoder	VideoWidth	VideoHeight	VideoFrameRate	VideoEmbedCCs	VideoPassthruCCs	VideoEmbedSCTE35	VideoSupportedFrameRates	VideoCBRVBR	VideoBitrate	VideoCPBBufferSize	VideoBufferFullnessInitial	VideoBufferFullnessTarget	VideoMaxIFrameSize	VideoMaxPFrameSize	VideoGOPLength	VideoMaxBFrames	VideoAdaptiveBFrames	VideoSceneDetection	VideoProfile	VideoLevel	VideoPAR	VideoPasses	AudioType	AudioTargetLoudnessLKFS	AudioUseSpeechGating	AudioSpeechGatingThreshold	AudioMaxTruePeak	AudioDynamicRangeCompression	AudioDRCThreshold	AudioDialNorm	AudioChannelFormat	AudioCBRVBR	AudioBitrate	AudioMaxTracks
+--/*
+SELECT	Min(Case When VariantId='' Then 'p1-'+CONVERT(varchar(5),ProfileId) Else VariantId End) as MinVariantId,Max(Case When VariantId='' Then 'p1-'+CONVERT(varchar(5),ProfileId) Else VariantId End) as MaxVariantId,Count(ProfileId) as CountProf,
+		OutputFileType,VideoType,VideoEncoder,AudioType,AudioChannelFormat,Max(OutputFileExtension) as MaxFileExtension,Min(Muxer) as MinMuxer,Min(OverallBitrate) as MinOverallBitrate,Min(VideoWidth) as MinVideoWidth,Min(VideoHeight) as MinVideoHeight,
+		Max(VideoWidth) as MaxVideoWidth,Max(VideoHeight) as MaxVideoHeight,Min(VideoEmbedCCs) as MinVideoEmbedCCs,Min(VideoPassthruCCs) as MinVideoPassthruCCs,Max(VideoEmbedSCTE35) as MaxVideoEmbedSCTE35,
+		Min(VideoFrameRate) as MinVideoFrameRate,Min(VideoSupportedFrameRates) as MinVideoSupportedFrameRates,Min(VideoCBRVBR) as MinVideoCBRVBR,Min(VideoBitrate) as MinVideoBitrate,Min(VideoCPBBufferSize) as MinVideoCPBBufferSize,
+		Min(VideoBufferFullnessInitial) as MinVideoBufferFullnessInitial,Min(VideoBufferFullnessTarget) as MinVideoBufferFullnessTarget,Min(VideoMaxIFrameSize) as MinVideoMaxIFrameSize,Min(VideoMaxPFrameSize) as MinVideoMaxPFrameSize,
+		Min(VideoGOPLength) as MinVideoGOPLength,Min(VideoMaxBFrames) as MinVideoMaxBFrames,Max(VideoAdaptiveBFrames) as MaxVideoAdaptiveBFrames,Max(VideoSceneDetection) as MaxVideoSceneDetection,Min(VideoProfile) as MinVideoProfile,
+		Min(VideoLevel) as MinVideoLevel,Min(VideoPAR) as MinVideoPAR,Min(VideoPasses) as MinVideoPasses,Min(AudioTargetLoudnessLKFS) as MinAudioTargetLoudnessLKFS,Max(AudioUseSpeechGating) as MaxAudioUseSpeechGating,
+		Min(AudioSpeechGatingThreshold) as MinAudioSpeechGatingThreshold,Min(AudioMaxTruePeak) as MinAudioMaxTruePeak,Max(AudioDynamicRangeCompression) as MaxAudioDynamicRangeCompression,Min(AudioDRCThreshold) as MinAudioDRCThreshold,
+		Min(AudioDialNorm) as MinAudioDialNorm,Min(AudioCBRVBR) as MinAudioCBRVBR,Min(AudioBitrate) as MinAudioBitrate,Min(AudioMaxTracks) as MinAudioMaxTracks
+FROM PipelineConfig 
+WHERE ProfileId > 200  And  VariantId >''
+GROUP BY OutputFileType,VideoType,VideoEncoder,AudioType,AudioChannelFormat
+ORDER BY Count(ProfileId) desc
+--*/
+SELECT * FROM PipelineConfig 
+where 
+  VideoHeight >= 200 
+ and  OverallBitrate > '' and VideoProfile in ('4','5','Main10') and VideoHeight = 1080
+-- and VariantId <= 'v1-2010' -- VariantId in('v1-789','v1-821','v1-596','v1-805','v1-804','v1-474','v1-457','v1-750','v1-237','v1-808','v1-787','v1-784','v1-799','v1-766','v1-809','v1-711','v1-503','v1-447','v1-524','v1-658','v1-337','v1-607','v1-726')
+-- and ProfileId in (200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,220,221,222,223,224,225,226,227,228,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,260,261,262,263,264,378,381,382,383,384,385,387,388,389,391,394,395,396,397,405,406,407,408,409,410,411,412,413,414,415,416,418,419,420,421,422,423,424,425,431,432,436,437,438,439,440,441,442,443,448,449,476,489,490,491,492,493,494,495,496,497,500,510,511,512,513,514,515,516,517,518,519,520,521,522,523,524,525,526,527,528,529,533,536,537,538,539,540,541,542,543,544,545,546,547,548,549,550,551,552,554,593,594,595,597,598,608,609,610,611,612,613,614,615,616,617,618,619,620,621,622,623,624,625,626,627,628,629,630,631,632,633,634,635,636,637,638,639,640,641,642,643,644,645,646,647,648,655,656,657,658,659,660,661,662,663,665,666,667,668,669,670,671,672,677,678,682,683,684,685,687,688,689,690,691,692,693,694,695,696,706,707,708,709,710,711,712,713,714,715,716,717,718,719,720,721,722,723,724,725,726,727,728,729,730,731,732,733,734,735,736,737,738,739,740,741,742,743,745,746,747,748,749,750,751,752,753,754,755,756,757,758,759,760,761,762,778,779,780,781,782,783,784,785,787,788,789,790,791,800,801,802,803,804,805,806,807,808,809,811,821,822,823,824,825,826,827,828,829,830,831,832,833,834,835,836,837,838,839,840,841,842,843,844,845,846,847,850,851,852,853,854,855,856,857,858,859,860,861,862,863,864,865,866,867,868,871,872,873,874,875,876,877,878,879,880,881,882,883,884,885,886,887,888,889,1013,1300,1301,1302,1303,1304,1305,1306,1312,1313,1314,1315,1316,1317,1318,1319,1320,1321,1322,1325,1326,1327,1329,1330,2000,2001,2002,2003)
+order by ProfileId
